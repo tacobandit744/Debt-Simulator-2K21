@@ -30,27 +30,46 @@ demon_world["fish"] = {
 	{name="running_shoes",x=width+0.25*width,y=height+0.8*height,width=50,height=50,r=0,g=0,b=0,behind=true,cost=1000},
 	{name="fertilizer",x=width+0.75*width,y=height+0.8*height,width=50,height=50,r=0,g=0,b=0,behind=true,cost=500}
 }
--- TODO: Graveyard, Lamppost ghost, Tree People
 
--- location spawns
+-- static spawns
+demon_world["locations"]["graveyard"] = {x=width+0.5*width-80,y=0.5*height-80,width=80,height=80,r=0,g=0,b=0}
+demon_world["locations"]["trees"] = {
+	{ x = 0.4 * width - 25, y = height * 2 + 0.4 * height - 25, width = 25, height = 25, r = 0, g = 0, b = 0 },
+	{ x = 0.4 * width - 25, y = height * 2 + 0.6 * height - 25, width = 25, height = 25, r = 0, g = 0, b = 0 },
+	{ x = 0.6 * width - 25, y = height * 2 + 0.4 * height - 25, width = 25, height = 25, r = 0, g = 0, b = 0 },
+	{ x = 0.6 * width - 25, y = height * 2 + 0.6 * height - 25, width = 25, height = 25, r = 0, g = 0, b = 0 }
+}
+demon_world["locations"]["lamppost"] = {x=width+0.5*width-200,y=height*2+0.5*height-200,width=200,height=200,r=0,g=0,b=0}
 demon_world["locations"]["tavern"] = {x=width*2+0.5*width-100,y=height*2+0.5*height-100,width=100,height=100,r=0,g=0,b=0}
 demon_world["locations"]["portal"] = {x=width*2+0.5*width-100,y=height*2+0.5*height-100,width=100,height=100,r=0,g=0,b=0}
 demon_world["locations"]["mycelium"] = {x=width*2+0.5*width-100,y=height+0.5*height-100,width=100,height=100,r=0,g=0,b=0}
 
-for i,v in ipairs(demon_world["rooms"]) do
+for _,v in ipairs(demon_world["rooms"]) do
 	build_room(v.left, v.up, v.right, v.down, demon_world["canvas"], v.origin_x, v.origin_y, walls)
 end
 
-for i, wall in ipairs(walls) do
+for _, wall in ipairs(walls) do
 	wall.old_x = wall.x
 	wall.old_y = wall.y
 end
 
 -- Font Setup
-level_font = love.graphics.newFont(24)
-demon_world["tip1_text"] = "Find the bed pieces!"
+level_font = love.graphics.newFont(64)
+demon_world["tip1_text"] = "Pay back your debts!"
 demon_world["tip1_width"] = level_font:getWidth(demon_world["tip1_text"])
-demon_world["tip2_text"] = "Find the bedroom!"
-demon_world["tip2_width"] = level_font:getWidth(demon_world["tip2_text"])
-demon_world["tip1"] = love.graphics.newText(level_font, demon_world["tip1_text"])
 demon_world["tip2"] = love.graphics.newText(level_font, demon_world["tip2_text"])
+
+-- Ghost Tips
+ghost_font = love.graphics.newFont(32)
+ghost["text1"] = "Felines hate obnoxious noises..."
+ghost["text1_width"] = level_font:getWidth(ghost["text1"])
+ghost["text2"] = "Someone once tried to bury those old cursed bones..."
+ghost["text2_width"] = level_font:getWidth(ghost["text2"])
+ghost["text3"] = "The mushrooms love to be reunited with their family..."
+ghost["text3_width"] = level_font:getWidth(ghost["text3"])
+ghost["text4"] = "A fishy fellow is quite fond of their friends..."
+ghost["text4_width"] = level_font:getWidth(ghost["text4"])
+ghost["tip1"] = love.graphics.newText(ghost_font, ghost["text1"])
+ghost["tip2"] = love.graphics.newText(ghost_font, ghost["text2"])
+ghost["tip3"] = love.graphics.newText(ghost_font, ghost["text3"])
+ghost["tip4"] = love.graphics.newText(ghost_font, ghost["text4"])
