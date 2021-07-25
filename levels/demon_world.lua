@@ -39,6 +39,7 @@ demon_world["locations"]["trees"] = {
 	{ x = 0.6 * width - 25, y = height * 2 + 0.4 * height - 25, width = 25, height = 25, r = 0, g = 0, b = 0 },
 	{ x = 0.6 * width - 25, y = height * 2 + 0.6 * height - 25, width = 25, height = 25, r = 0, g = 0, b = 0 }
 }
+
 demon_world["locations"]["lamppost"] = {x=width+0.5*width-200,y=height*2+0.5*height-200,width=200,height=200,r=0,g=0,b=0}
 demon_world["locations"]["tavern"] = {x=width*2+0.5*width-100,y=height*2+0.5*height-100,width=100,height=100,r=0,g=0,b=0}
 demon_world["locations"]["portal"] = {x=width*2+0.5*width-100,y=height*2+0.5*height-100,width=100,height=100,r=0,g=0,b=0}
