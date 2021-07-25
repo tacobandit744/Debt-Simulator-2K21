@@ -1,5 +1,16 @@
 require "controls"
 
+bag={
+	slot1=nil,
+	slot2=nil,
+	slot3=nil,
+	slot4=nil,
+	slot5=nil,
+	slot6=nil,
+	slot7=nil,
+	slot8=nil
+}
+
 player={
 	move = 200,
 	run = 300,
@@ -10,13 +21,14 @@ player={
 	width = 25,
 	height = 25,
 	collect= love.audio.newSource("audio/collect.wav", "stream"),
-	r=1,
-	g=1,
-	b=0
+	r=1, g=1, b=0,
+	money=0,
+	left_hand=nil,
+	right_hand=bag
 }
 
-enemies={
-	{
+npcs={
+	nook={
 		move = 150,
 		run = 200,
 		old_x = 50,
@@ -25,30 +37,111 @@ enemies={
 		y = 1400,
 		width = 100,
 		height = 100,
-		detection=500,
-		seek_noise= love.audio.newSource("audio/spooder.wav", "stream"),
-		anim=love.graphics.newImage("anims/spooder1_quad.png"),
-		anim_frame=0,
-		max_frames=4,
-		r=0.1, g=0.8, b=0.2
+		detection = 500,
+		seek_noise = love.audio.newSource("audio/spooder.wav", "stream"),
+		anim = love.graphics.newImage("anims/spooder1_quad.png"),
+		anim_frame = 0,
+		max_frames = 4,
+		r = 0.1, g = 0.8, b = 0.2
 	},
-	{
-		move = 200,
-		run = 250,
+	fish={
 		old_x = 1800,
 		old_y = 1400,
 		x = 1800,
 		y = 1400,
-		width = 75,
-		height = 100,
-		detection=800,
-		anim=love.graphics.newImage("anims/spooder2_quad.png"),
-		anim_frame=0,
-		max_frames=4,
-		seek_noise= love.audio.newSource("audio/spooder2.wav", "stream"),
-		r=0.1, g=0.2, b=0.6
+		width = 25,
+		height = 30,
+		detection = 100,
+		anim = love.graphics.newImage(""),
+		anim_frame = 0,
+		max_frames = 4,
+		seek_noise = love.audio.newSource("", "stream"),
+		r = 0.1, g = 0.2, b = 0.6
+	},
+	dog={
+		old_x = 1800,
+		old_y = 1400,
+		x = 1800,
+		y = 1400,
+		width = 25,
+		height = 30,
+		detection = 100,
+		anim = love.graphics.newImage(""),
+		anim_frame = 0,
+		max_frames = 4,
+		seek_noise = love.audio.newSource("", "stream"),
+		r = 0.1, g = 0.2, b = 0.6
+	},
+	cat1={
+		old_x = 1800,
+		old_y = 1400,
+		x = 1800,
+		y = 1400,
+		width = 25,
+		height = 30,
+		detection = 100,
+		anim = love.graphics.newImage(""),
+		anim_frame = 0,
+		max_frames = 4,
+		seek_noise = love.audio.newSource("", "stream"),
+		r = 0.1, g = 0.2, b = 0.6
+	},
+	cat2={
+		old_x = 1800,
+		old_y = 1400,
+		x = 1800,
+		y = 1400,
+		width = 25,
+		height = 30,
+		detection = 100,
+		anim = love.graphics.newImage(""),
+		anim_frame = 0,
+		max_frames = 4,
+		seek_noise = love.audio.newSource("", "stream"),
+		r = 0.1, g = 0.2, b = 0.6
+	},
+	ghost={
+		old_x = 1800,
+		old_y = 1400,
+		x = 1800,
+		y = 1400,
+		width = 25,
+		height = 30,
+		detection = 100,
+		anim = love.graphics.newImage(""),
+		anim_frame = 0,
+		max_frames = 4,
+		seek_noise = love.audio.newSource("", "stream"),
+		r = 0.1, g = 0.2, b = 0.6
+	},
+	tavern={
+		old_x = 1800,
+		old_y = 1400,
+		x = 1800,
+		y = 1400,
+		width = 25,
+		height = 30,
+		detection = 100,
+		anim = love.graphics.newImage(""),
+		anim_frame = 0,
+		max_frames = 4,
+		seek_noise = love.audio.newSource("", "stream"),
+		r = 0.1, g = 0.2, b = 0.6
 	}
 }
+
+function pickup_item(item)
+	local index = bag["top"]
+	if (index > 0 and index < 9) then
+		bag["slot"..index] = item
+	end
+end
+
+function empty_bag()
+	for i,_ in pairs(bag) do
+		bag[i] = nil
+	end
+end
 
 function move_player(dt, bed)
 	player.old_x = player.x
@@ -81,12 +174,12 @@ function move_player(dt, bed)
 			player.y = player.y + player.move * dt
 		end
 	end
-	for i,wall in ipairs(walls) do
+	for _,wall in ipairs(walls) do
 		wall_collision = check_collision(player, wall)
 		if wall_collision then resolve_collision(player, wall) end
 	end
 
-	for i, bed_part in ipairs(bed) do
+	for _, bed_part in ipairs(bed) do
 		touched_bedpart = check_collision(player, bed_part)
 		if touched_bedpart and not bed_part.found then
 			bed_part.found=true
@@ -98,7 +191,7 @@ function move_player(dt, bed)
 end
 
 function move_enemies(dt)
-	for i,enemy in ipairs(enemies) do
+	for _,enemy in ipairs(enemies) do
 		enemy.old_x = enemy.x
 		enemy.old_y = enemy.y
 		detected_player = check_detection(player, enemy)
@@ -108,7 +201,7 @@ function move_enemies(dt)
 			enemy.x = enemy.x + math.cos(angle)*enemy.run*dt
 			enemy.y = enemy.y - math.sin(angle)*enemy.run*dt
 		end
-		for i,wall in ipairs(walls) do
+		for _,wall in ipairs(walls) do
 			wall_collision = check_collision(enemy, wall)
 			if wall_collision then resolve_collision(enemy, wall) end
 		end
@@ -161,7 +254,7 @@ end
 
 function check_all_parts_found(bed)
 	local count = 0
-	for i, bed_part in ipairs(bed) do
+	for _, bed_part in ipairs(bed) do
 		if bed_part.found then count = count + 1 end
 	end
 	if count == 4 then
@@ -174,7 +267,7 @@ function check_win(bedroom_area)
 end
 
 function update_animations(dt)
-	for i,enemy in ipairs(enemies) do
+	for _,enemy in ipairs(enemies) do
 		enemy.anim_frame = enemy.anim_frame+10*dt
 		if enemy.anim_frame >= enemy.max_frames-1 then enemy.anim_frame = 0 end
 	end
